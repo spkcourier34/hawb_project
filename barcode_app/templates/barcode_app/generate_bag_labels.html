@@ -1,0 +1,138 @@
+{% extends "barcode_app/base.html" %}
+{% block title %}Generate Bag Labels - HAWB Automation Pro{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Generate Bag Labels</h1>
+  <p>Create A5 bag labels with consignor info, bag number, and barcode — ready to print.</p>
+</div>
+
+<div style="display:flex; gap:400px; align-items: flex-start; flex-wrap: wrap;">
+
+  <div style="flex: 1; min-width: 400px; max-width: 560px;">
+    <div class="card">
+      <div class="card-header">Label Settings</div>
+      <div class="card-body">
+        <form method="post" id="bag-form">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="form-label" for="id_run_number">Run Number</label>
+            <input class="form-input mono" type="text" id="id_run_number" name="run_number"
+              value="{{ form.run_number.value|default:'' }}" placeholder="e.g. SPKLHR103" maxlength="30"
+              autocomplete="off" />
+            {% if form.run_number.errors %}
+            {% for e in form.run_number.errors %}
+            <div class="form-error">{{ e }}</div>
+            {% endfor %}
+            {% endif %}
+            <div class="form-hint">Bags will be named: <strong class="mono">&lt;RunNumber&gt;BAG1</strong>, <strong
+                class="mono">&lt;RunNumber&gt;BAG2</strong>, …</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="id_count">Number of Bags</label>
+            <input class="form-input" type="number" id="id_count" name="count" value="{{ form.count.value|default:'' }}"
+              min="1" max="500" placeholder="e.g. 50" />
+            {% if form.count.errors %}
+            {% for e in form.count.errors %}
+            <div class="form-error">{{ e }}</div>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          {% if form.non_field_errors %}
+          {% for e in form.non_field_errors %}
+          <div class="form-error" style="margin-bottom:12px">{{ e }}</div>
+          {% endfor %}
+          {% endif %}
+
+          <div id="preview-box"
+            style="display:none; background:var(--blue-soft); border:1px solid var(--border); border-radius:var(--radius); padding:12px 16px; margin-bottom:18px; font-size:.88rem; color:var(--blue-dark);">
+            <strong>Preview:</strong> <span id="preview-text"></span>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+            <button type="submit" class="btn btn-primary" id="submit-btn" name="action" value="bag_pdf">Generate Bag
+              Labels (PDF)</button>
+            <a href="{% url 'home' %}" class="btn btn-ghost">Cancel</a>
+          </div>
+
+          <div style="margin-top:14px; font-size:.8rem; color:var(--muted);">
+            * Shows the highest sequence number in the database.
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% if run_summary %}
+  <div style="flex: 0 0 320px;">
+    <div class="card">
+      <div class="card-header">📊 Last Run Summary</div>
+      <div class="card-body" style="padding:0">
+        <table style="width:100%; border-collapse: collapse; font-size:0.9rem;">
+          <thead>
+            <tr style="background:var(--blue); border-bottom:1px solid var(--border)">
+              <th
+                style="padding:12px 15px; text-align:left; color:white; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em;">
+                Dest</th>
+              <th
+                style="padding:12px 15px; text-align:left; color:white; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em;">
+                Last Run No.</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in run_summary %}
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:12px 15px; font-weight:bold; color:var(--blue)">{{ item.dest }}</td>
+              <td style="padding:12px 15px;" class="mono">{{ item.run_no }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:10px; font-size:0.75rem; color:var(--muted); padding:0 5px">
+      * Shows the highest sequence number in the database.
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const runEl = document.getElementById('id_run_number');
+  const countEl = document.getElementById('id_count');
+  const box = document.getElementById('preview-box');
+  const txt = document.getElementById('preview-text');
+  const submitBtn = document.getElementById('submit-btn');
+  const form = document.getElementById('bag-form');
+
+  function updatePreview() {
+    const run = runEl.value.trim().toUpperCase();
+    const c = parseInt(countEl.value, 10);
+    if (run && !isNaN(c) && c > 0) {
+      txt.textContent = `${run}BAG1 → ${run}BAG${c} (${c} label${c === 1 ? '' : 's'})`;
+      box.style.display = 'block';
+    } else {
+      box.style.display = 'none';
+    }
+  }
+
+  runEl.addEventListener('input', updatePreview);
+  countEl.addEventListener('input', updatePreview);
+  updatePreview();
+
+  form.addEventListener('submit', function () {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Generating…';
+    setTimeout(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Generate Bag Labels (PDF)';
+    }, 3000);
+  });
+</script>
+{% endblock %}

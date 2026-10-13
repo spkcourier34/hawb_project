@@ -1,0 +1,347 @@
+{% extends "barcode_app/base.html" %}
+{% block title %}Records - HAWB Automation Pro{% endblock %}
+
+{% block extra_head %}
+<style>
+  .records-toolbar {
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .records-toolbar .fg {
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .records-toolbar label {
+    font-size:.78rem;
+    font-weight:600;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.3px;
+  }
+  .records-toolbar input,
+  .records-toolbar select {
+    border:1.5px solid var(--border);
+    border-radius:var(--radius);
+    padding:8px 10px;
+    font-size:.86rem;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .records-toolbar input:focus,
+  .records-toolbar select:focus {
+    outline:none;
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px rgba(21,88,176,.12);
+  }
+  .records-actions {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:16px;
+  }
+  .chk-col { width: 42px; text-align:center; }
+  .del-btn-wrap { display:none; }
+  .del-btn-wrap.visible { display:inline-flex; }
+  .table-wrap { max-height:68vh; overflow:auto; }
+  .sort-link {
+    color:#fff;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .sort-link .arrow { opacity:.55; font-size:.78rem; }
+  .sort-link.active .arrow { opacity:1; }
+  .row-special { background:#faf5ff !important; }
+  
+  /* Modal Styles */
+  .modal-overlay {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.5); z-index:9999;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal-content {
+    background:#fff; width:450px; max-width:90%;
+    border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    padding:24px;
+  }
+  .modal-header {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:16px; border-bottom:1px solid #e5e7eb; padding-bottom:12px;
+  }
+  .modal-header h2 { margin:0; font-size:1.25rem; color:#111827; }
+  .close-btn { background:none; border:none; font-size:1.5rem; cursor:pointer; color:#6b7280; }
+  .close-btn:hover { color:#111827; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>HAWB Records
+    <span class="badge badge-blue" style="font-size:.8rem;">{{ total }} total</span>
+    {% if showing != total %}
+      <span class="badge" style="background:#FEF3C7;color:#92400E;font-size:.8rem;">{{ showing }} shown</span>
+    {% endif %}
+  </h1>
+  <p>Filter, sort, export, and delete stored HAWB records.</p>
+</div>
+
+<form method="get">
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-header">Filters</div>
+    <div class="card-body">
+      <div class="records-toolbar">
+        <div class="fg"><label>Search</label><input type="text" name="q" value="{{ filters.q }}" placeholder="Search all fields" /></div>
+        <div class="fg"><label>MAWB</label><input type="text" name="mawb" value="{{ filters.mawb }}" /></div>
+        <div class="fg"><label>Run No</label><input type="text" name="run_no" value="{{ filters.run_no }}" /></div>
+        <div class="fg"><label>From Date</label><input type="text" name="from_date" value="{{ filters.from_date }}" placeholder="YYYY-MM-DD or DD/MM/YYYY" /></div>
+        <div class="fg"><label>To Date</label><input type="text" name="to_date" value="{{ filters.to_date }}" placeholder="YYYY-MM-DD or DD/MM/YYYY" /></div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button type="submit" class="btn btn-primary btn-sm">Apply Filters</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="openAdvFilterModal()">Advance Filter</button>
+        <a href="{% url 'view_records' %}" class="btn btn-ghost btn-sm">Reset</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advance Filter Modal -->
+  <div id="advFilterModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content" style="width:800px; max-width:95%;">
+      <div class="modal-header">
+        <h2>Advance Filters</h2>
+        <button type="button" onclick="closeAdvFilterModal()" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="records-toolbar" style="margin-bottom:20px;">
+          <div class="fg"><label>HAWB</label><input type="text" name="hawb" value="{{ filters.hawb }}" /></div>
+          <div class="fg"><label>Pkg/Bags</label><input type="text" name="no_of_bags" value="{{ filters.no_of_bags }}" /></div>
+          <div class="fg"><label>Weight</label><input type="text" name="weight" value="{{ filters.weight }}" /></div>
+          <div class="fg"><label>Dest</label><input type="text" name="destination" value="{{ filters.destination }}" /></div>
+          <div class="fg"><label>IEC</label><input type="text" name="iec" value="{{ filters.iec }}" /></div>
+          <div class="fg"><label>MHBS No</label><input type="text" name="mhbs_no" value="{{ filters.mhbs_no }}" /></div>
+          <div class="fg"><label>Consignor</label><input type="text" name="consignor" value="{{ filters.consignor }}" /></div>
+          <div class="fg"><label>Consignee</label><input type="text" name="consignee" value="{{ filters.consignee }}" /></div>
+          <div class="fg"><label>Invoice No</label><input type="text" name="invoice_no" value="{{ filters.invoice_no }}" /></div>
+          <div class="fg"><label>Inv Date</label><input type="text" name="invoice_date" value="{{ filters.invoice_date }}" /></div>
+          <div class="fg"><label>GSTIN</label><input type="text" name="gstin" value="{{ filters.gstin }}" /></div>
+          <div class="fg"><label>Flight</label><input type="text" name="flight_no" value="{{ filters.flight_no }}" /></div>
+          <div class="fg"><label>Dep Date</label><input type="text" name="departure_date" value="{{ filters.departure_date }}" placeholder="Exact text match" /></div>
+          <div class="fg">
+            <label>Type</label>
+            <select name="special">
+              <option value="" {% if filters.special == '' %}selected{% endif %}>All</option>
+              <option value="0" {% if filters.special == '0' %}selected{% endif %}>Normal only</option>
+              <option value="1" {% if filters.special == '1' %}selected{% endif %}>Special only</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Status</label>
+            <input type="text" name="status" value="{{ filters.status }}" placeholder="BTT, Canceled..." />
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+          <button type="button" class="btn btn-ghost" onclick="closeAdvFilterModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Apply Filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="records-actions">
+  <a href="{% url 'export_records' %}{% if export_query %}?{{ export_query }}{% endif %}" class="btn btn-success btn-sm">Export Excel ({{ showing }})</a>
+  
+  <span style="display:inline-flex;gap:10px;align-items:center;margin-left:auto;">
+    <button type="button" class="btn btn-primary btn-sm" onclick="openStatusModal()">Update Status</button>
+  </span>
+
+  <span class="del-btn-wrap" id="del-wrap">
+    <form method="post" action="{% url 'delete_records' %}" id="del-form" onsubmit="return confirmDelete()">
+      {% csrf_token %}
+      <div id="del-ids"></div>
+      <button type="submit" class="btn btn-danger btn-sm">Delete Selected (<span id="del-count">0</span>)</button>
+    </form>
+  </span>
+</div>
+
+{% if records %}
+<div class="card">
+  <div class="table-wrap">
+    <table id="records-table">
+      <thead>
+        <tr>
+          <th class="chk-col"><input type="checkbox" id="chk-all" title="Select all" /></th>
+          {% for header in sort_headers %}
+            <th>
+              <a href="{{ header.url }}" class="sort-link {% if header.active %}active{% endif %}">
+                {{ header.label }}
+                <span class="arrow">
+                  {% if header.active and header.order == 'asc' %}
+                    ▲
+                  {% elif header.active and header.order == 'desc' %}
+                    ▼
+                  {% else %}
+                    ⇅
+                  {% endif %}
+                </span>
+              </a>
+            </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for rec in records %}
+          <tr data-id="{{ rec.pk }}" class="{% if rec.is_special %}row-special{% endif %}">
+            <td class="chk-col"><input type="checkbox" class="row-chk" data-id="{{ rec.pk }}" /></td>
+            <td class="mono">{{ rec.mawb|default:"-" }}</td>
+            <td class="mono">{{ rec.run_no|default:"-" }}</td>
+            <td class="mono" style="font-weight:700;color:var(--blue)">{{ rec.hawb_number }}</td>
+            <td>{{ rec.no_of_bags|default:"-" }}</td>
+            <td>{{ rec.weight|default:"-" }}</td>
+            <td>{{ rec.destination|default:"-" }}</td>
+            <td class="mono">{{ rec.iec|default:"-" }}</td>
+            <td class="mono">{{ rec.mhbs_no|default:"-" }}</td>
+            <td>{{ rec.consignor|default:"-" }}</td>
+            <td>{{ rec.consignee|default:"-" }}</td>
+            <td class="mono">{{ rec.invoice_no|default:"-" }}</td>
+            <td>{{ rec.invoice_date|default:"-" }}</td>
+            <td class="mono">{{ rec.gstin|default:"-" }}</td>
+            <td class="mono">{{ rec.flight_no|default:"-" }}</td>
+            <td>{{ rec.departure_date|default:"-" }}</td>
+            <td>
+              {% if rec.is_special %}
+                <span class="badge badge-purple">Special</span>
+              {% else %}
+                <span class="badge badge-green">Normal</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if rec.status|lower == 'btt' or rec.status|lower == 'canceled' or rec.status|lower == 'returned' %}
+                <span class="badge" style="background:#fee2e2;color:#991b1b;">{{ rec.status }}</span>
+              {% elif rec.status %}
+                <span class="badge" style="background:#f3f4f6;color:#374151;">{{ rec.status }}</span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card">
+  <div class="card-body" style="text-align:center;padding:48px;color:var(--muted)">
+    <div style="font-weight:600;margin-bottom:6px">No records found</div>
+    <div style="font-size:.9rem">Try adjusting your filters or uploading an XML file.</div>
+    <a href="{% url 'upload_xml' %}" class="btn btn-primary" style="margin-top:16px">Upload XML</a>
+  </div>
+</div>
+{% endif %}
+
+<!-- Status Update Modal -->
+<div id="statusModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Update Status</h2>
+      <button type="button" onclick="closeStatusModal()" class="close-btn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:#4b5563;font-size:0.9rem;margin-bottom:16px;">
+        Upload an Excel file to bulk update statuses. Use options like <strong>BTT</strong>, <strong>Canceled</strong>, or <strong>Returned</strong>.
+      </p>
+      <form method="post" action="{% url 'bulk_update_status' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="margin-bottom:20px;">
+          <input type="file" name="status_excel" accept=".xlsx,.xls" required style="font-size:0.9rem;width:100%;padding:8px;border:1px solid #d1d5db;border-radius:4px;" />
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <button type="submit" class="btn btn-primary">Update Statuses</button>
+          <a href="{% url 'download_status_template' %}" class="btn btn-ghost" style="text-decoration:underline;color:#2563eb;">Download Excel Template</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const chkAll = document.getElementById('chk-all');
+  const delWrap = document.getElementById('del-wrap');
+  const delIds = document.getElementById('del-ids');
+  const delCnt = document.getElementById('del-count');
+
+  function getChecked() {
+    return [...document.querySelectorAll('.row-chk:checked')];
+  }
+
+  function updateDeleteBar() {
+    const checked = getChecked();
+    if (checked.length > 0) {
+      delWrap.classList.add('visible');
+      delCnt.textContent = checked.length;
+    } else {
+      delWrap.classList.remove('visible');
+    }
+  }
+
+  if (chkAll) {
+    chkAll.addEventListener('change', function() {
+      document.querySelectorAll('.row-chk').forEach(c => c.checked = this.checked);
+      updateDeleteBar();
+    });
+  }
+
+  document.querySelectorAll('.row-chk').forEach(c => c.addEventListener('change', updateDeleteBar));
+
+  function confirmDelete() {
+    const checked = getChecked();
+    if (checked.length === 0) return false;
+    if (!confirm(`Delete ${checked.length} selected record(s)? This cannot be undone.`)) return false;
+    delIds.innerHTML = '';
+    checked.forEach(c => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'ids';
+      input.value = c.dataset.id;
+      delIds.appendChild(input);
+    });
+    return true;
+  }
+
+  function openStatusModal() {
+    document.getElementById('statusModal').style.display = 'flex';
+  }
+  function closeStatusModal() {
+    document.getElementById('statusModal').style.display = 'none';
+  }
+
+  function openAdvFilterModal() {
+    document.getElementById('advFilterModal').style.display = 'flex';
+  }
+  function closeAdvFilterModal() {
+    document.getElementById('advFilterModal').style.display = 'none';
+  }
+
+  // Close modal when clicking outside of it
+  window.addEventListener('click', function(e) {
+    const statusModal = document.getElementById('statusModal');
+    const advFilterModal = document.getElementById('advFilterModal');
+    if (e.target === statusModal) {
+      closeStatusModal();
+    }
+    if (e.target === advFilterModal) {
+      closeAdvFilterModal();
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,344 @@
+{% extends "barcode_app/base.html" %}
+{% block title %}PDF to TIF Converter – HAWB Automation Pro{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Option panel ─────────────────────────────────────────────── */
+  .opt-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+  }
+  .opt-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .opt-row label {
+    font-weight: 500;
+    font-size: .9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .opt-row input[type="checkbox"] {
+    width: 17px; height: 17px;
+    accent-color: var(--blue);
+    cursor: pointer;
+  }
+  .opt-sep {
+    width: 1px; height: 36px;
+    background: var(--border);
+  }
+  #dpi-row { transition: opacity .2s; }
+  #dpi-row.disabled { opacity: .35; pointer-events: none; }
+
+  /* ── Tip banner ───────────────────────────────────────────────── */
+  .tip-banner {
+    background: var(--blue-soft);
+    border: 1px solid #C3D8F8;
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    font-size: .84rem;
+    color: var(--blue-dark);
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  /* ── Log box (mirrors the desktop app's CTkTextbox) ──────────── */
+  .log-box {
+    background: #0F1117;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .82rem;
+    min-height: 160px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .log-entry { margin-bottom: 4px; }
+  .log-green  { color: #00ff88; }
+  .log-yellow { color: #ffaa00; }
+  .log-red    { color: #ff5555; }
+  .log-white  { color: #e0e0e0; }
+
+  /* ── Progress Bar ─────────────────────────────────────────────── */
+  .progress-container {
+    display: none;
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+  }
+  .progress-bg {
+    background: #E5E7EB;
+    border-radius: 100px;
+    height: 10px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+  .progress-bar {
+    background: linear-gradient(90deg, var(--blue), #3B82F6);
+    width: 0%;
+    height: 100%;
+    transition: width 0.4s ease-out;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>📄 PDF → Multipage TIF Converter</h1>
+  <p>Convert one or more PDF files to multipage TIF. Auto-tunes DPI to stay within 1.9&nbsp;MB per file.</p>
+</div>
+
+<div class="tip-banner">
+  <span>💡</span>
+  <span>
+    <strong>Auto Optimize DPI</strong> (default, on): DPI is automatically tuned between
+    <strong>72 – 400</strong> so the output TIF stays ≤ 1.9&nbsp;MB.<br>
+    <strong>Use Custom DPI</strong>: set an exact DPI (72 – 600). A warning appears if the result
+    exceeds 1.9&nbsp;MB.
+  </span>
+</div>
+
+<div class="card">
+  <div class="card-header">Conversion Settings</div>
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data" id="convert-form">
+      {% csrf_token %}
+
+      {# ── PDF file picker ───────────────────────────────── #}
+      <div class="form-group">
+        <label class="form-label" for="{{ form.pdf_files.id_for_label }}">Select PDF File(s)</label>
+        {{ form.pdf_files }}
+        {% if form.pdf_files.errors %}
+          {% for e in form.pdf_files.errors %}
+            <div class="form-error">{{ e }}</div>
+          {% endfor %}
+        {% endif %}
+        <div class="form-hint">You can select multiple PDFs at once.</div>
+      </div>
+
+      {# ── Mode options (mirrors the desktop app's option frame) ── #}
+      <div class="opt-panel">
+        <div class="opt-row" id="auto-row">
+          <input type="checkbox"
+                 name="auto_optimize"
+                 id="{{ form.auto_optimize.id_for_label }}"
+                 {% if form.auto_optimize.value %}checked{% endif %}>
+          <label for="{{ form.auto_optimize.id_for_label }}">
+            Auto Optimize DPI
+            <span style="color:var(--muted);font-weight:400;">(stay ≤ 1.9 MB)</span>
+          </label>
+        </div>
+
+        <div class="opt-sep"></div>
+
+        <div class="opt-row">
+          <input type="checkbox"
+                 name="use_custom_dpi"
+                 id="{{ form.use_custom_dpi.id_for_label }}"
+                 {% if form.use_custom_dpi.value %}checked{% endif %}>
+          <label for="{{ form.use_custom_dpi.id_for_label }}">Use Custom DPI</label>
+        </div>
+
+        <div class="opt-row" id="dpi-row">
+          <label for="{{ form.custom_dpi.id_for_label }}" style="font-size:.85rem;color:var(--muted)">DPI:</label>
+          {{ form.custom_dpi }}
+          {% if form.custom_dpi.errors %}
+            {% for e in form.custom_dpi.errors %}
+              <span class="form-error">{{ e }}</span>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      {% if form.non_field_errors %}
+        {% for e in form.non_field_errors %}
+          <div class="form-error" style="margin-bottom:12px">{{ e }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button type="submit" id="convert-btn" class="btn btn-primary">
+          🚀 Convert
+        </button>
+        <a href="{% url 'home' %}" class="btn btn-ghost">← Back</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="progress-container" class="progress-container">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <span class="form-label" style="margin-bottom:0">Conversion Progress</span>
+    <span id="progress-text" style="font-size:.85rem; font-weight:600; color:var(--blue)">0%</span>
+  </div>
+  <div class="progress-bg">
+    <div id="progress-bar" class="progress-bar"></div>
+  </div>
+  <div id="progress-status" style="font-size:.78rem; color:var(--muted); margin-top:4px;">
+    Processing files... Please wait.
+  </div>
+</div>
+
+{# ── Result log (mirrors the desktop CTkTextbox) ──── #}
+{% if messages %}
+<div class="card" style="margin-top:20px;">
+  <div class="card-header">Conversion Results</div>
+  <div class="card-body">
+    <div class="log-box" id="log-box">
+      {% for m in messages %}
+        {% if 'tif-log' in m.tags %}
+          {% if 'success' in m.tags %}
+            <div class="log-entry log-green">{{ m }}</div>
+          {% elif 'warning' in m.tags %}
+            <div class="log-entry log-yellow">{{ m }}</div>
+          {% elif 'error' in m.tags %}
+            <div class="log-entry log-red">{{ m }}</div>
+          {% else %}
+            <div class="log-entry log-white">{{ m }}</div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // ── Mirror the mutual-exclusivity logic from PDF-To-Tiff.py ──────────────
+  const autoCheck    = document.getElementById('id_auto_optimize');
+  const customCheck  = document.getElementById('id_use_custom_dpi');
+  const dpiRow       = document.getElementById('dpi-row');
+  const dpiEntry     = document.getElementById('id_custom_dpi');
+
+  function toggleAuto() {
+    if (autoCheck.checked) {
+      customCheck.checked = false;
+      dpiRow.classList.add('disabled');
+      dpiEntry.disabled = true;
+    } else {
+      // If unchecking auto, default to custom
+      customCheck.checked = true;
+      dpiRow.classList.remove('disabled');
+      dpiEntry.disabled = false;
+    }
+  }
+
+  function toggleCustom() {
+    if (customCheck.checked) {
+      autoCheck.checked = false;
+      dpiRow.classList.remove('disabled');
+      dpiEntry.disabled = false;
+    } else {
+      // If unchecking custom, default to auto
+      autoCheck.checked = true;
+      dpiRow.classList.add('disabled');
+      dpiEntry.disabled = true;
+    }
+  }
+
+  // Initialise state on page load
+  if (customCheck.checked) toggleCustom();
+  else toggleAuto();
+
+  autoCheck.addEventListener('change',   toggleAuto);
+  customCheck.addEventListener('change', toggleCustom);
+
+  // Scroll log to bottom on load (mirrors log_box.see("end"))
+  const logBox = document.getElementById('log-box');
+  if (logBox) logBox.scrollTop = logBox.scrollHeight;
+
+  // ── Progress Bar & Download Detection ───────────────────────────────────
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  function deleteCookie(name) {
+    document.cookie = name + '=; Max-Age=-99999999; path=/;';
+  }
+
+  document.getElementById('convert-form').addEventListener('submit', () => {
+    const btn = document.getElementById('convert-btn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Converting…';
+
+    // Ensure any old cookie is gone
+    deleteCookie('download_complete');
+
+    // Show and animate progress bar
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const progressStatus = document.getElementById('progress-status');
+    
+    progressContainer.style.display = 'block';
+    progressStatus.textContent = 'Processing files... Please wait.';
+    
+    let p = 0;
+    const interval = setInterval(() => {
+      // Simulate progress up to 95%
+      if (p < 30) p += Math.random() * 8;
+      else if (p < 70) p += Math.random() * 3;
+      else if (p < 95) p += Math.random() * 0.5;
+      
+      if (p >= 95) {
+        p = 95;
+        progressStatus.textContent = 'Finalizing and preparing download...';
+      }
+      
+      progressBar.style.width = p + '%';
+      progressText.textContent = Math.round(p) + '%';
+    }, 400);
+
+    // Poll for the 'download_complete' cookie from server
+    const pollInterval = setInterval(() => {
+      if (getCookie('download_complete') === 'true') {
+        clearInterval(pollInterval);
+        clearInterval(interval);
+        clearInterval(safetyTimeout);
+        deleteCookie('download_complete');
+        
+        progressBar.style.width = '100%';
+        progressText.textContent = '100%';
+        progressStatus.textContent = 'Conversion complete! Download started.';
+        
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }, 1500);
+      }
+    }, 500);
+
+    // Safety timeout (2 mins) to prevent getting stuck if download fails
+    const safetyTimeout = setTimeout(() => {
+      clearInterval(pollInterval);
+      clearInterval(interval);
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      progressStatus.textContent = 'Process taking longer than expected. Check logs below.';
+    }, 120000);
+  });
+</script>
+{% endblock %}

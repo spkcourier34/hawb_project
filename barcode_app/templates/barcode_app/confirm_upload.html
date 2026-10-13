@@ -1,0 +1,58 @@
+{% extends "barcode_app/base.html" %}
+{% block title %}Confirm Upload — HAWB Automation Pro{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>⚠ Duplicate Data Detected</h1>
+  <p>Some HAWB numbers in this XML are already in your database.</p>
+</div>
+
+<div style="max-width: 600px;">
+  <div class="card" style="border-color:#F59E0B;">
+    <div class="card-header" style="background:#FFFBEB; color:#92400E; border-bottom:1px solid #FDE68A;">
+      Resolution Required
+    </div>
+    <div class="card-body">
+      
+      <div style="margin-bottom: 24px;">
+        <p>We analyzed the manifest for <strong>{{ mawb }}</strong> (Run: {{ run_no }}) and found:</p>
+        <ul style="list-style:none; padding:0; margin:15px 0;">
+          <li style="padding:8px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between">
+            <span>New Records (to be added)</span>
+            <strong class="mono" style="color:var(--success)">+{{ new_count }}</strong>
+          </li>
+          <li style="padding:8px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between">
+            <span>Duplicate HAWBs (already exist)</span>
+            <strong class="mono" style="color:#DC2626">{{ dup_count }}</strong>
+          </li>
+        </ul>
+        <p style="font-size:0.9rem; color:var(--muted)">How would you like to handle the duplicates?</p>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="mawb" value="{{ mawb }}">
+        <input type="hidden" name="run_no" value="{{ run_no }}">
+        <input type="hidden" name="confirm_action" value="execute">
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <button type="submit" name="dup_mode" value="skip" class="btn btn-primary" style="background:#10B981; border-color:#059669; padding:12px">
+            <strong>Skip Duplicates</strong><br>
+            <span style="font-size:0.7rem; opacity:0.9; font-weight:normal">Only add the {{ new_count }} new ones</span>
+          </button>
+          
+          <button type="submit" name="dup_mode" value="replace" class="btn btn-primary" style="background:#F59E0B; border-color:#D97706; padding:12px">
+            <strong>Replace Existing</strong><br>
+            <span style="font-size:0.7rem; opacity:0.9; font-weight:normal">Update all records with XML info</span>
+          </button>
+        </div>
+
+        <div style="text-align:center">
+          <a href="{% url 'upload_xml' %}" class="btn btn-ghost" style="width:100%; color:#DC2626">Cancel & Abort Upload</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

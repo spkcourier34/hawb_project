@@ -1,0 +1,141 @@
+{% extends "barcode_app/base.html" %}
+{% block title %}Generate HAWB Numbers - HAWB Automation Pro{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Generate HAWB Numbers</h1>
+  <p>Create a sequential block of 9-digit HAWB numbers and download Excel or barcode PDF.</p>
+</div>
+
+<div style="display:flex; gap:20px; align-items: flex-start; flex-wrap: wrap;">
+  <div style="flex:1; min-width:350px; max-width: 560px;">
+  <div class="card">
+    <div class="card-header">Generation Settings</div>
+    <div class="card-body">
+      <form method="post" id="gen-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label" for="id_start_hawb">Start HAWB Number</label>
+          <input class="form-input mono" type="text" id="id_start_hawb" name="start_hawb"
+            value="{{ form.start_hawb.value|default:next_hawb }}" maxlength="9" placeholder="e.g. {{ next_hawb }}"
+            autocomplete="off" />
+          {% if form.start_hawb.errors %}
+          {% for e in form.start_hawb.errors %}
+          <div class="form-error">{{ e }}</div>
+          {% endfor %}
+          {% endif %}
+          <div class="form-hint">Must be exactly 9 digits. Next suggested: <strong class="mono">{{ next_hawb }}</strong>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_count">Number of HAWBs to Generate</label>
+          <input class="form-input" type="number" id="id_count" name="count" value="{{ form.count.value|default:'' }}"
+            min="1" max="100000" placeholder="e.g. 50" />
+          {% if form.count.errors %}
+          {% for e in form.count.errors %}
+          <div class="form-error">{{ e }}</div>
+          {% endfor %}
+          {% endif %}
+        </div>
+
+        {% if form.non_field_errors %}
+        {% for e in form.non_field_errors %}
+        <div class="form-error" style="margin-bottom:12px">{{ e }}</div>
+        {% endfor %}
+        {% endif %}
+
+        <div id="preview-box"
+          style="display:none; background:var(--blue-soft); border:1px solid var(--border); border-radius:var(--radius); padding:12px 16px; margin-bottom:18px; font-size:.88rem; color:var(--blue-dark);">
+          <strong>Preview:</strong> <span id="preview-text"></span>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+          <button type="submit" class="btn btn-success" id="submit-btn" name="action" value="excel">Download
+            Excel</button>
+          <button type="submit" class="btn btn-primary" name="action" value="barcode_pdf">Generate Barcode
+            (PDF)</button>
+          <a href="{% url 'home' %}" class="btn btn-ghost">Cancel</a>
+        </div>
+
+        <div style="margin-top:14px; font-size:.8rem; color:var(--muted);">
+          Excel output preserves the current flow. Barcode output uses <span class="mono"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+  </div>
+
+  <div id="last-batch-container" style="flex:1; min-width:300px; max-width: 400px; display:{% if last_batch_start > 0 %}block{% else %}none{% endif %};">
+    <div class="card">
+      <div class="card-header">Last Batch</div>
+      <div class="card-body">
+        <div style="margin-bottom:15px; font-size:0.95rem;">
+          You recently generated <strong id="lb-count">{{ last_batch_count }}</strong> HAWB numbers:
+          <br>
+          <span id="lb-range" class="mono" style="color:var(--blue); font-weight:bold; font-size:1.1rem; display:inline-block; margin-top:8px;">
+            {{ last_batch_start }} - {{ last_batch_end }}
+          </span>
+        </div>
+        <p style="font-size:0.85rem; color:var(--muted); margin-bottom:20px;">
+          You can re-download this batch until you upload an XML data file containing new records.
+        </p>
+        <div style="display:flex; gap:10px; flex-direction:column;">
+          <a href="{% url 'redownload_hawb_batch' %}?action=excel" class="btn btn-success" style="text-align:center;">Re-download Excel</a>
+          <a href="{% url 'redownload_hawb_batch' %}?action=barcode_pdf" class="btn btn-primary" style="text-align:center;">Re-download Barcode (PDF)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const formEl = document.getElementById('gen-form');
+  const startEl = document.getElementById('id_start_hawb');
+  const countEl = document.getElementById('id_count');
+  const box = document.getElementById('preview-box');
+  const txt = document.getElementById('preview-text');
+  const submitBtn = document.getElementById('submit-btn');
+
+  function updatePreview() {
+    const s = parseInt(startEl.value, 10);
+    const c = parseInt(countEl.value, 10);
+    if (!isNaN(s) && !isNaN(c) && c > 0 && String(s).length === 9) {
+      const last = s + c - 1;
+      if (last <= 999999999) {
+        txt.textContent = `${s} -> ${last} (${c} number${c === 1 ? '' : 's'})`;
+        box.style.display = 'block';
+        return;
+      }
+    }
+    box.style.display = 'none';
+  }
+
+  startEl.addEventListener('input', updatePreview);
+  countEl.addEventListener('input', updatePreview);
+  updatePreview();
+
+  formEl.addEventListener('submit', function () {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+    
+    // Update and show the Last Batch box immediately
+    const s = parseInt(startEl.value, 10);
+    const c = parseInt(countEl.value, 10);
+    if (!isNaN(s) && !isNaN(c) && c > 0) {
+      const last = s + c - 1;
+      document.getElementById('lb-count').textContent = c;
+      document.getElementById('lb-range').textContent = s + ' - ' + last;
+      document.getElementById('last-batch-container').style.display = 'block';
+    }
+
+    setTimeout(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Download Excel';
+    }, 3000);
+  });
+</script>
+{% endblock %}

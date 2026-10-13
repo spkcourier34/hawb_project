@@ -1,0 +1,116 @@
+{% extends "barcode_app/base.html" %}
+{% block title %}Dashboard - HAWB Automation Pro{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <p>HAWB Automation Pro - manage number generation, labels, and XML records.</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="label">Total Records</div>
+    <div class="value">{{ total }}</div>
+    <div class="sub">All HAWB entries in the database</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Special Records</div>
+    <div class="value" style="color:var(--purple)">{{ total_special }}</div>
+    <div class="sub">Non-9-digit HAWBs</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Next HAWB</div>
+    <div class="value" style="color:var(--blue); font-size:1.4rem">{{ next_hawb }}</div>
+    <div class="sub">Next serial to generate</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Last Generated</div>
+    <div class="value" style="font-size:1.3rem">{{ last_generated }}</div>
+    <div class="sub">Last saved serial number</div>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:20px; margin-bottom:28px">
+  <div class="card">
+    <div class="card-header">Generate HAWB Numbers</div>
+    <div class="card-body">
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:16px">
+        Generate sequential 9-digit HAWB numbers and export Excel, barcode PDF, or TIF files.
+      </p>
+      <a href="{% url 'generate_hawb' %}" class="btn btn-success">Generate HAWB</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Generate Bag Labels</div>
+    <div class="card-body">
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:16px">
+        Create A5 bag labels with consignor info, sequential bag numbers, and Code 128 barcodes.
+      </p>
+      <a href="{% url 'generate_bag_labels' %}" class="btn btn-primary">Generate Bags</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Upload XML Data</div>
+    <div class="card-body">
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:16px">
+        Upload an XML manifest file to parse and store HAWB records into the database.
+      </p>
+      <a href="{% url 'upload_xml' %}" class="btn btn-primary">Upload XML</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Convert PDF to TIF</div>
+    <div class="card-body">
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:16px">
+        Upload PDF(s) and convert to multipage TIF. Auto-tunes DPI to stay within 1.9 MB.
+      </p>
+      <a href="{% url 'convert_pdf_to_tif' %}" class="btn btn-primary">Open PDF to TIF</a>
+    </div>
+  </div>
+
+</div>
+
+{% if last_record %}
+<div class="card">
+  <div class="card-header">Last Uploaded Normal Record</div>
+  <div class="card-body">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px">
+      <div>
+        <div class="form-label">HAWB Number</div>
+        <div class="mono" style="font-size:1.1rem;font-weight:600;color:var(--blue)">{{ last_record.hawb_number }}</div>
+      </div>
+      <div>
+        <div class="form-label">Run No</div>
+        <div>{{ last_record.run_no }}</div>
+      </div>
+      <div>
+        <div class="form-label">MAWB</div>
+        <div>{{ last_record.mawb }}</div>
+      </div>
+      <div>
+        <div class="form-label">Destination</div>
+        <div>{{ last_record.destination|default:"-" }}</div>
+      </div>
+      <div>
+        <div class="form-label">Flight</div>
+        <div>{{ last_record.flight_no|default:"-" }}</div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <a href="{% url 'view_records' %}" class="btn btn-ghost btn-sm">View all records</a>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="card">
+  <div class="card-body" style="text-align:center;padding:40px;color:var(--muted)">
+    <div style="font-weight:600;margin-bottom:6px">No records yet</div>
+    <div style="font-size:.9rem">Upload an XML file to get started.</div>
+    <a href="{% url 'upload_xml' %}" class="btn btn-primary" style="margin-top:16px">Upload XML</a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

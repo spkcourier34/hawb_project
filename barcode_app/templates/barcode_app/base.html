@@ -1,0 +1,369 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Reset & Variables ──────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #1558B0;
+      --blue-dark:  #0F3F82;
+      --blue-soft:  #E8F0FB;
+      --teal:       #0F766E;
+      --teal-dark:  #0D5C55;
+      --green:      #16A34A;
+      --red:        #DC2626;
+      --amber:      #D97706;
+      --purple:     #7C3AED;
+      --bg:         #F0F2F5;
+      --surface:    #FFFFFF;
+      --border:     #D1D5DB;
+      --text:       #1A1A2E;
+      --muted:      #6B7280;
+      --radius:     8px;
+      --shadow:     0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md:  0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.05);
+    }
+
+    html { font-size: 15px; }
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top Nav ──────────────────────────────────────────────── */
+    .topnav {
+      background: var(--blue);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 0 28px;
+      height: 58px;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topnav .brand {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: .5px;
+      color: #fff;
+      text-decoration: none;
+      margin-right: 36px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .topnav .brand span { opacity: .6; font-weight: 400; }
+    .topnav nav { display: flex; gap: 4px; flex: 1; }
+    .topnav nav a {
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      padding: 0 14px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      font-size: .88rem;
+      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+    .topnav nav a:hover   { color: #fff; border-bottom-color: rgba(255,255,255,.4); }
+    .topnav nav a.active  { color: #fff; border-bottom-color: #fff; }
+
+    /* ── Page wrapper ─────────────────────────────────────────── */
+    .page { flex: 1; padding: 32px 28px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+    /* ── Page header ──────────────────────────────────────────── */
+    .page-header { margin-bottom: 28px; }
+    .page-header h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .page-header p { color: var(--muted); margin-top: 4px; font-size: .9rem; }
+
+    /* ── Card ─────────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      background: var(--blue-soft);
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      color: var(--blue);
+      font-size: .9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-body { padding: 24px 20px; }
+
+    /* ── Form elements ────────────────────────────────────────── */
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block;
+      font-weight: 500;
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .form-input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: .95rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(21,88,176,.12);
+      background: #fff;
+    }
+    .form-input[type="file"] { padding: 8px 10px; }
+    .form-error { color: var(--red); font-size: .82rem; margin-top: 4px; }
+    .form-hint  { color: var(--muted); font-size: .82rem; margin-top: 4px; }
+
+    /* ── Remove Number Spinners ──────────────────────────────── */
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    /* ── Buttons ──────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: .9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s, transform .1s;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn-primary  { background: var(--blue);  color: #fff; }
+    .btn-primary:hover  { background: var(--blue-dark); }
+    .btn-success  { background: var(--green); color: #fff; }
+    .btn-success:hover  { background: #15803D; }
+    .btn-danger   { background: var(--red);   color: #fff; }
+    .btn-danger:hover   { background: #B91C1C; }
+    .btn-teal     { background: var(--teal);  color: #fff; }
+    .btn-teal:hover     { background: var(--teal-dark); }
+    .btn-ghost    { background: transparent; border: 1.5px solid var(--border); color: var(--muted); }
+    .btn-ghost:hover    { background: var(--bg); color: var(--text); }
+    .btn-sm { padding: 6px 14px; font-size: .82rem; }
+
+    /* ── Messages ─────────────────────────────────────────────── */
+    .messages { list-style: none; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .messages li {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: .9rem;
+      border-left: 4px solid;
+    }
+    .messages .success { background: #F0FDF4; border-color: var(--green); color: #166534; }
+    .messages .error   { background: #FEF2F2; border-color: var(--red);   color: #991B1B; }
+    .messages .warning { background: #FFFBEB; border-color: var(--amber); color: #92400E; }
+    .messages .info    { background: var(--blue-soft); border-color: var(--blue); color: var(--blue-dark); }
+
+    /* ── Badge ────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+    .badge-blue    { background: var(--blue-soft); color: var(--blue); }
+    .badge-purple  { background: #F5F3FF; color: var(--purple); }
+    .badge-green   { background: #F0FDF4; color: var(--green); }
+
+    /* ── Stat cards ───────────────────────────────────────────── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .stat-card .label { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 500; }
+    .stat-card .value { font-size: 1.9rem; font-weight: 700; color: var(--text); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+    .stat-card .sub   { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── Table ────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    thead th {
+      background: var(--blue);
+      color: #fff;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: .8rem;
+      letter-spacing: .3px;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+    thead th:first-child { border-radius: 0; }
+    tbody tr:nth-child(even)  { background: #F8FAFC; }
+    tbody tr:nth-child(odd)   { background: var(--surface); }
+    tbody tr:hover            { background: var(--blue-soft); }
+    tbody td { padding: 9px 12px; border-bottom: 1px solid #F0F2F5; color: var(--text); white-space: nowrap; }
+    .mono { font-family: 'IBM Plex Mono', monospace; }
+
+    /* ── Filter bar ───────────────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    .filter-bar .fg { display: flex; flex-direction: column; gap: 4px; }
+    .filter-bar label { font-size: .78rem; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+    .filter-bar input,
+    .filter-bar select {
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: .85rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .filter-bar input:focus,
+    .filter-bar select:focus { border-color: var(--blue); }
+    .filter-bar input[type="text"] { width: 220px; }
+
+    /* ── Action row ───────────────────────────────────────────── */
+    .action-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    .footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 28px;
+      font-size: .8rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* ── Responsive ───────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .topnav { padding: 12px 16px; height: auto; flex-direction: column; align-items: flex-start; }
+      .topnav .brand { margin-bottom: 12px; margin-right: 0; }
+      .topnav nav { width: 100%; flex-wrap: wrap; gap: 6px; }
+      .topnav nav a { height: auto; padding: 8px 12px; border-bottom: none; border-radius: var(--radius); }
+      .topnav nav a:hover { background: rgba(255,255,255,0.1); border-bottom: none; }
+      .topnav nav a.active { background: rgba(255,255,255,0.2); border-bottom: none; }
+      
+      .page { padding: 16px 12px; }
+      .page-header h1 { font-size: 1.3rem; }
+      
+      .stat-grid { grid-template-columns: 1fr; }
+      
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .filter-bar .fg { width: 100%; }
+      .filter-bar input[type="text"], .filter-bar select { width: 100%; }
+      
+      .action-row { flex-direction: column; align-items: stretch; }
+      .action-row .btn { justify-content: center; }
+      
+      .footer { flex-direction: column; gap: 10px; text-align: center; justify-content: center; }
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- ── Top Navigation ──────────────────────────────────────────── -->
+<header class="topnav">
+  <a href="{% url 'home' %}" class="brand">
+    <img src="{% static 'barcode_app/logo.png' %}" alt="HAWB Pro Logo" style="height: 40px; width: auto;">
+  </a>
+  <nav>
+    <a href="{% url 'home' %}"          class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Dashboard</a>
+    <a href="{% url 'generate_hawb' %}" class="{% if request.resolver_match.url_name == 'generate_hawb' %}active{% endif %}">HAWB Labels</a>
+    <a href="{% url 'generate_bag_labels' %}" class="{% if request.resolver_match.url_name == 'generate_bag_labels' %}active{% endif %}">Bag Labels</a>
+    <a href="{% url 'convert_pdf_to_tif' %}" class="{% if request.resolver_match.url_name == 'convert_pdf_to_tif' %}active{% endif %}">PDF to TIF</a>
+    <a href="{% url 'upload_xml' %}"    class="{% if request.resolver_match.url_name == 'upload_xml' %}active{% endif %}">Upload XML</a>
+    <a href="{% url 'view_records' %}"  class="{% if request.resolver_match.url_name == 'view_records' %}active{% endif %}">Records</a>
+  </nav>
+</header>
+
+<!-- ── Flash Messages ──────────────────────────────────────────── -->
+{% if messages %}
+<div style="padding: 12px 28px 0">
+  <ul class="messages">
+    {% for m in messages %}
+      {% if 'tif-log' not in m.tags %}
+        <li class="{{ m.tags }}">{{ m }}</li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<!-- ── Main Content ────────────────────────────────────────────── -->
+<main class="page">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── Footer ──────────────────────────────────────────────────── -->
+<footer class="footer">
+  <span>HAWB Automation &nbsp;•&nbsp; SPK Courier Pvt Ltd</span>
+  <!-- <span>Django Edition</span> -->
+</footer>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        @page {
+            size: 148mm 150mm;
+            margin: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            width: 148mm;
+            height: 150mm;
+            background: white;
+            padding-left: 6.5mm; /* Centers 135mm wrapper on 148mm page */
+            padding-top: 5mm;
+        }
+
+        .label-wrapper {
+            width: 135mm;
+            border: 3pt solid black;
+            background: white;
+            padding-top: 5mm;
+        }
+
+        .header-section {
+            border-bottom: 2.5pt solid black;
+            padding: 2mm 7mm 4mm 7mm;
+            text-align: center;
+        }
+
+        .header-label {
+            font-size: 18pt;
+            font-weight: 700;
+            margin-bottom: 1mm;
+        }
+
+        .hawb-number {
+            font-size: 48pt;
+            font-weight: 900;
+            letter-spacing: 1pt;
+            line-height: 1;
+        }
+
+        .barcode-section {
+            padding: 8mm 4mm 5mm 4mm;
+            text-align: center;
+        }
+
+        .barcode-img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="label-wrapper">
+        <div class="header-section">
+            <div class="header-label">HAWB:</div>
+            <div class="hawb-number">{{ hawb }}</div>
+        </div>
+        <div class="barcode-section">
+            <img class="barcode-img" src="data:image/png;base64,{{ barcode_base64 }}">
+        </div>
+    </div>
+</body>
+
+</html>

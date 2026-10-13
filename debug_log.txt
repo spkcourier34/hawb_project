@@ -1,0 +1,311 @@
+
+--- Upload execution started at 2026-05-02 13:02:58.759829 ---
+Executing with 70 records. Dup mode: replace
+Finished execution. Normal: 0, Special: 0, Updated: 70, Skipped: 0
+
+--- Upload execution started at 2026-05-02 13:04:56.142246 ---
+Executing with 70 records. Dup mode: replace
+Finished execution. Normal: 0, Special: 0, Updated: 70, Skipped: 0
+
+--- Upload execution started at 2026-07-10 21:06:29.160085 ---
+Executing with 21 records. Dup mode: skip
+Index 0: Successfully saved 221001485
+Index 1: Successfully saved 221001486
+Index 2: Successfully saved 221001487
+Index 3: Successfully saved 221001488
+Index 4: Successfully saved 221001489
+Index 5: Successfully saved 221001490
+Index 6: Successfully saved 221001491
+Index 7: Successfully saved 221001492
+Index 8: Successfully saved 221001493
+Index 9: Successfully saved 221001494
+Index 10: Successfully saved 221001495
+Index 11: Successfully saved 221001496
+Index 12: Successfully saved 221001497
+Index 13: Successfully saved 221001498
+Index 14: Successfully saved 221001499
+Index 15: Successfully saved 221001500
+Index 16: Successfully saved 221001501
+Index 17: Successfully saved 221001502
+Index 18: Successfully saved 221001503
+Index 19: Successfully saved 221001504
+Index 20: Successfully saved 221001505
+Finished execution. Normal: 21, Special: 0, Updated: 0, Skipped: 0
+
+--- Upload execution started at 2026-07-10 21:09:42.356756 ---
+Executing with 21 records. Dup mode: skip
+Index 0: Successfully saved 221001485
+Index 1: Successfully saved 221001486
+Index 2: Successfully saved 221001487
+Index 3: Successfully saved 221001488
+Index 4: Successfully saved 221001489
+Index 5: Successfully saved 221001490
+Index 6: Successfully saved 221001491
+Index 7: Successfully saved 221001492
+Index 8: Successfully saved 221001493
+Index 9: Successfully saved 221001494
+Index 10: Successfully saved 221001495
+Index 11: Successfully saved 221001496
+Index 12: Successfully saved 221001497
+Index 13: Successfully saved 221001498
+Index 14: Successfully saved 221001499
+Index 15: Successfully saved 221001500
+Index 16: Successfully saved 221001501
+Index 17: Successfully saved 221001502
+Index 18: Successfully saved 221001503
+Index 19: Successfully saved 221001504
+Index 20: Successfully saved 221001505
+Finished execution. Normal: 21, Special: 0, Updated: 0, Skipped: 0
+
+--- Upload execution started at 2026-08-02 17:04:55.157272 ---
+Executing with 39 records. Dup mode: skip
+Index 0: Successfully saved 221001545
+Index 1: Successfully saved 221001546
+Index 2: Successfully saved 221001547
+Index 3: Successfully saved 221001548
+Index 4: Successfully saved 221001549
+Index 5: Successfully saved 221001550
+Index 6: Successfully saved 221001551
+Index 7: Successfully saved 221001552
+Index 8: Successfully saved 221001553
+Index 9: Successfully saved 221001554
+Index 10: Successfully saved 221001555
+Index 11: Successfully saved 221001556
+Index 12: Successfully saved 221001557
+Index 13: Successfully saved 221001558
+Index 14: Successfully saved 221001559
+Index 15: Successfully saved 221001560
+Index 16: Successfully saved 221001561
+Index 17: Successfully saved 221001562
+Index 18: Successfully saved 221001563
+Index 19: Successfully saved 221001564
+Index 20: Successfully saved 221001565
+Index 21: Successfully saved 221001566
+Index 22: Successfully saved 221001567
+Index 23: Successfully saved 221001568
+Index 24: Successfully saved 221001569
+Index 25: Successfully saved 221001570
+Index 26: Successfully saved 221001571
+Index 27: Successfully saved 221001572
+Index 28: Successfully saved 221001573
+Index 29: Successfully saved 221001574
+Index 30: Successfully saved 221001575
+Index 31: Successfully saved 221001576
+Index 32: Successfully saved 221001577
+Index 33: Successfully saved 221001578
+Index 34: Successfully saved 221001579
+Index 35: Successfully saved 221001580
+Index 36: Successfully saved 221001581
+Index 37: Successfully saved 221001582
+Index 38: Successfully saved 221001583
+Finished execution. Normal: 39, Special: 0, Updated: 0, Skipped: 0
+
+--- Upload execution started at 2026-08-03 17:59:33.114334 ---
+Executing with 39 records. Dup mode: skip
+Index 0: Successfully saved 221001545
+Index 1: Successfully saved 221001546
+Index 2: Successfully saved 221001547
+Index 3: Successfully saved 221001548
+Index 4: Successfully saved 221001549
+Index 5: Successfully saved 221001550
+Index 6: Successfully saved 221001551
+Index 7: Successfully saved 221001552
+Index 8: Successfully saved 221001553
+Index 9: Successfully saved 221001554
+Index 10: Successfully saved 221001555
+Index 11: Successfully saved 221001556
+Index 12: Successfully saved 221001557
+Index 13: Successfully saved 221001558
+Index 14: Successfully saved 221001559
+Index 15: Successfully saved 221001560
+Index 16: Successfully saved 221001561
+Index 17: Successfully saved 221001562
+Index 18: Successfully saved 221001563
+Index 19: Successfully saved 221001564
+Index 20: Successfully saved 221001565
+Index 21: Successfully saved 221001566
+Index 22: Successfully saved 221001567
+Index 23: Successfully saved 221001568
+Index 24: Successfully saved 221001569
+Index 25: Successfully saved 221001570
+Index 26: Successfully saved 221001571
+Index 27: Successfully saved 221001572
+Index 28: Successfully saved 221001573
+Index 29: Successfully saved 221001574
+Index 30: Successfully saved 221001575
+Index 31: Successfully saved 221001576
+Index 32: Successfully saved 221001577
+Index 33: Successfully saved 221001578
+Index 34: Successfully saved 221001579
+Index 35: Successfully saved 221001580
+Index 36: Successfully saved 221001581
+Index 37: Successfully saved 221001582
+Index 38: Successfully saved 221001583
+Finished execution. Normal: 39, Special: 0, Updated: 0, Skipped: 0
+
+--- Upload execution started at 2026-08-05 19:52:26.709382 ---
+Executing with 41 records. Dup mode: skip
+Index 0: Successfully saved 221001584
+Index 1: Successfully saved 221001585
+Index 2: Successfully saved 221001586
+Index 3: Successfully saved 221001587
+Index 4: Successfully saved 221001588
+Index 5: Successfully saved 221001589
+Index 6: Successfully saved 221001590
+Index 7: Successfully saved 221001591
+Index 8: Successfully saved 221001592
+Index 9: Successfully saved 221001593
+Index 10: Successfully saved 221001594
+Index 11: Successfully saved 221001595
+Index 12: Successfully saved 221001596
+Index 13: Successfully saved 221001597
+Index 14: Successfully saved 221001598
+Index 15: Successfully saved 221001599
+Index 16: Successfully saved 221001600
+Index 17: Successfully saved 221001601
+Index 18: Successfully saved 221001602
+Index 19: Successfully saved 221001603
+Index 20: Successfully saved 221001604
+Index 21: Successfully saved 221001605
+Index 22: Successfully saved 221001606
+Index 23: Successfully saved 221001607
+Index 24: Successfully saved 221001608
+Index 25: Successfully saved 221001609
+Index 26: Successfully saved 221001610
+Index 27: Successfully saved 221001611
+Index 28: Successfully saved 221001612
+Index 29: Successfully saved 221001613
+Index 30: Successfully saved 221001614
+Index 31: Successfully saved 221001615
+Index 32: Successfully saved 221001616
+Index 33: Successfully saved 221001617
+Index 34: Successfully saved 221001618
+Index 35: Successfully saved 221001619
+Index 36: Successfully saved 221001620
+Index 37: Successfully saved 221001621
+Index 38: Successfully saved 221001622
+Index 39: Successfully saved 221001623
+Index 40: Successfully saved 221001624
+Finished execution. Normal: 41, Special: 0, Updated: 0, Skipped: 0
+
+--- Upload execution started at 2026-08-05 19:53:06.661889 ---
+Executing with 6 records. Dup mode: skip
+Index 0: Successfully saved 221001625
+Index 1: Successfully saved 221001626
+Index 2: Successfully saved 221001627
+Index 3: Successfully saved 221001628
+Index 4: Successfully saved 221001629
+Index 5: Successfully saved 221001630
+Finished execution. Normal: 6, Special: 0, Updated: 0, Skipped: 0
+
+--- Upload execution started at 2026-08-07 14:25:36.020918 ---
+Executing with 41 records. Dup mode: skip
+Index 0: Successfully saved 221001631
+Index 1: Successfully saved 221001632
+Index 2: Successfully saved 221001633
+Index 3: Successfully saved 221001634
+Index 4: Successfully saved 221001635
+Index 5: Successfully saved 221001636
+Index 6: Successfully saved 221001637
+Index 7: Successfully saved 221001638
+Index 8: Successfully saved 221001639
+Index 9: Successfully saved 221001640
+Index 10: Successfully saved 221001641
+Index 11: Successfully saved 221001642
+Index 12: Successfully saved 221001643
+Index 13: Successfully saved 221001644
+Index 14: Successfully saved 221001645
+Index 15: Successfully saved 221001646
+Index 16: Successfully saved 221001647
+Index 17: Successfully saved 221001648
+Index 18: Successfully saved 221001649
+Index 19: Successfully saved 221001650
+Index 20: Successfully saved 221001651
+Index 21: Successfully saved 221001652
+Index 22: Successfully saved 221001653
+Index 23: Successfully saved 221001654
+Index 24: Successfully saved 221001655
+Index 25: Successfully saved 221001656
+Index 26: Successfully saved 221001657
+Index 27: Successfully saved 221001658
+Index 28: Successfully saved 221001659
+Index 29: Successfully saved 221001660
+Index 30: Successfully saved 221001661
+Index 31: Successfully saved 221001662
+Index 32: Successfully saved 221001663
+Index 33: Successfully saved 221001664
+Index 34: Successfully saved 221001665
+Index 35: Successfully saved 221001666
+Index 36: Successfully saved 221001667
+Index 37: Successfully saved 221001668
+Index 38: Successfully saved 221001669
+Index 39: Successfully saved 221001670
+Index 40: Successfully saved 221001671
+Finished execution. Normal: 41, Special: 0, Updated: 0, Skipped: 0
+
+--- Upload execution started at 2026-08-07 14:28:22.774711 ---
+Executing with 6 records. Dup mode: skip
+Index 0: Successfully saved 221001672
+Index 1: Successfully saved 221001673
+Index 2: Successfully saved 221001674
+Index 3: Successfully saved 221001675
+Index 4: Successfully saved 221001676
+Index 5: Successfully saved 221001677
+Finished execution. Normal: 6, Special: 0, Updated: 0, Skipped: 0
+
+--- Upload execution started at 2026-08-08 20:44:19.405682 ---
+Executing with 43 records. Dup mode: skip
+Index 0: Successfully saved 221001678
+Index 1: Successfully saved 221001679
+Index 2: Successfully saved 221001680
+Index 3: Successfully saved 221001681
+Index 4: Successfully saved 221001682
+Index 5: Successfully saved 221001683
+Index 6: Successfully saved 221001684
+Index 7: Successfully saved 221001685
+Index 8: Successfully saved 221001686
+Index 9: Successfully saved 221001687
+Index 10: Successfully saved 221001688
+Index 11: Successfully saved 221001689
+Index 12: Successfully saved 221001690
+Index 13: Successfully saved 221001691
+Index 14: Successfully saved 221001692
+Index 15: Successfully saved 221001693
+Index 16: Successfully saved 221001694
+Index 17: Successfully saved 221001695
+Index 18: Successfully saved 221001696
+Index 19: Successfully saved 221001697
+Index 20: Successfully saved 221001698
+Index 21: Successfully saved 221001699
+Index 22: Successfully saved 221001700
+Index 23: Successfully saved 221001701
+Index 24: Successfully saved 221001702
+Index 25: Successfully saved 221001703
+Index 26: Successfully saved 221001704
+Index 27: Successfully saved 221001705
+Index 28: Successfully saved 221001706
+Index 29: Successfully saved 221001707
+Index 30: Successfully saved 221001708
+Index 31: Successfully saved 221001709
+Index 32: Successfully saved 221001710
+Index 33: Successfully saved 221001711
+Index 34: Successfully saved 221001712
+Index 35: Successfully saved 221001713
+Index 36: Successfully saved 221001714
+Index 37: Successfully saved 221001715
+Index 38: Successfully saved 221001716
+Index 39: Successfully saved 221001717
+Index 40: Successfully saved 221001718
+Index 41: Successfully saved 221001719
+Index 42: Successfully saved 221001720
+Finished execution. Normal: 43, Special: 0, Updated: 0, Skipped: 0
+
+--- Upload execution started at 2026-08-08 20:44:48.389912 ---
+Executing with 6 records. Dup mode: skip
+Index 0: Successfully saved 221001721
+Index 1: Successfully saved 221001722
+Index 2: Successfully saved 221001723
+Index 3: Successfully saved 221001724
+Index 4: Successfully saved 221001725
+Index 5: Successfully saved 221001726
+Finished execution. Normal: 6, Special: 0, Updated: 0, Skipped: 0

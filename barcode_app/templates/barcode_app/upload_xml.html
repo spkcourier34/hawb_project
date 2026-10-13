@@ -1,0 +1,119 @@
+{% extends "barcode_app/base.html" %}
+{% block title %}Upload XML — HAWB Automation Pro{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>⬆ Upload XML Data</h1>
+  <p>Parse an XML manifest and store HAWB records into the database.</p>
+</div>
+
+<div style="max-width: 560px;">
+  <div class="card">
+    <div class="card-header">📄 XML Upload Settings</div>
+    <div class="card-body">
+
+      <form method="post" enctype="multipart/form-data" id="upload-form">
+        {% csrf_token %}
+
+        <!-- MAWB -->
+        <div class="form-group">
+          <label class="form-label" for="id_mawb">MAWB Number</label>
+          <input
+            class="form-input mono"
+            type="text"
+            id="id_mawb"
+            name="mawb"
+            value="{{ form.mawb.value|default:'' }}"
+            placeholder="e.g. 09830426314"
+            autocomplete="off"
+          />
+          {% if form.mawb.errors %}
+            {% for e in form.mawb.errors %}<div class="form-error">⚠ {{ e }}</div>{% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Run No -->
+        <div class="form-group">
+          <label class="form-label" for="id_run_no">Run Number</label>
+          <input
+            class="form-input mono"
+            type="text"
+            id="id_run_no"
+            name="run_no"
+            value="{{ form.run_no.value|default:'' }}"
+            placeholder="e.g. SPKLHR103"
+            autocomplete="off"
+          />
+          {% if form.run_no.errors %}
+            {% for e in form.run_no.errors %}<div class="form-error">⚠ {{ e }}</div>{% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- File -->
+        <div class="form-group">
+          <label class="form-label" for="id_xml_file">XML File</label>
+          <input
+            class="form-input"
+            type="file"
+            id="id_xml_file"
+            name="xml_file"
+            accept=".xml"
+          />
+          {% if form.xml_file.errors %}
+            {% for e in form.xml_file.errors %}<div class="form-error">⚠ {{ e }}</div>{% endfor %}
+          {% endif %}
+          <div class="form-hint">Accepts .xml files. Max 20 MB.</div>
+        </div>
+
+        <!-- Info box -->
+        <div style="background:#FFFBEB; border:1px solid #FDE68A; border-radius:var(--radius); padding:12px 14px; margin-bottom:18px; font-size:.85rem; color:#92400E;">
+          <strong>Note:</strong> Non-9-digit HAWB numbers are stored as <span class="badge badge-purple">★ Special</span> records.
+          If duplicate HAWB numbers are found in the database, you will be asked whether to <strong>Skip</strong> or <strong>Replace</strong> them.
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            ⬆ Parse & Upload
+          </button>
+          <a href="{% url 'home' %}" class="btn btn-ghost">Cancel</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Supported XML tags info -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-header">🔍 Supported XML Tags</div>
+    <div class="card-body">
+      <table style="font-size:.82rem; width:100%">
+        <thead>
+          <tr>
+            <th style="background:var(--blue);color:#fff;padding:7px 10px;text-align:left">Field</th>
+            <th style="background:var(--blue);color:#fff;padding:7px 10px;text-align:left">Accepted XML Tag Names</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for field, tags in supported_tags.items %}
+          <tr>
+            <td style="padding:6px 10px;font-weight:600;color:var(--blue)">{{ field }}</td>
+            <td style="padding:6px 10px;color:var(--muted)" class="mono">{{ tags|join:", " }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.getElementById('upload-form').addEventListener('submit', function() {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Parsing…';
+  });
+</script>
+{% endblock %}

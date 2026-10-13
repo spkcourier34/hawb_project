@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        @page {
+            size: 148mm 150mm;
+            /* Reduced height */
+            margin: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            width: 148mm;
+            height: 150mm;
+            background: white;
+            padding: 0;
+            padding-left: 6.5mm; /* Centers the 135mm wrapper on 148mm width */
+            padding-top: 5mm;
+        }
+
+        .label-wrapper {
+            width: 135mm;
+            border: 3pt solid black;
+            padding-top: 5mm;
+            padding-bottom: 0; /* Content padding handled by blocks */
+            background: white;
+            margin-bottom: 5mm;
+        }
+
+        /* ── CONSIGNOR BLOCK ──────────────────────────────── */
+        .consignor-block {
+            border-bottom: 2.5pt solid black;
+            /* Slightly thicker divider */
+            padding: 2mm 7mm 4mm 7mm;
+            text-align: center;
+        }
+
+        .consignor-title {
+            font-size: 14pt;
+            font-weight: 900;
+            text-decoration: underline;
+            letter-spacing: 1pt;
+            margin-bottom: 2mm;
+        }
+
+        .consignor-table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            font-size: 11pt;
+            font-weight: 600;
+            line-height: 1.4;
+            text-align: left;
+            /* Keep text left-aligned within the centered table */
+        }
+
+        /* ── MHBS / BAG NUMBER BLOCK ─────────────────────── */
+        .mhbs-block {
+            border-bottom: 2.5pt solid black;
+            padding: 6mm 7mm 8mm 7mm;
+            text-align: center;
+        }
+
+        .mhbs-title {
+            font-size: 12pt;
+            font-weight: 700;
+            margin-bottom: 1mm;
+        }
+
+        .bag-number-text {
+            font-size: 32pt;
+            font-weight: 900;
+            letter-spacing: 1pt;
+            line-height: 1;
+        }
+
+        /* ── BARCODE BLOCK ───────────────────────────────── */
+        .barcode-block {
+            padding: 8mm 4mm 5mm 4mm;
+            text-align: center;
+        }
+
+        .barcode-img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 3mm;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="label-wrapper">
+
+        <!-- CONSIGNOR BLOCK -->
+        <div class="consignor-block">
+            <div class="consignor-title">CONSIGNOR</div>
+            <table class="consignor-table">
+                <tr>
+                    <td style="width: 18mm; vertical-align: top; font-weight: 900;">Name:</td>
+                    <td style="vertical-align: top;">{{ consignor_name }}</td>
+                </tr>
+                <tr>
+                    <td style="width: 18mm; vertical-align: top; font-weight: 900;">Address:</td>
+                    <td style="vertical-align: top;">
+                        {{ consignor_address_line1 }}<br>
+                        {{ consignor_address_line2 }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- MHBS / BAG NUMBER BLOCK -->
+        <div class="mhbs-block">
+            <div class="mhbs-title">MHBS/Bag Number: -</div>
+            <div class="bag-number-text">{{ bag_number }}</div>
+        </div>
+
+        <!-- BARCODE BLOCK -->
+        <div class="barcode-block">
+            <img class="barcode-img" src="data:image/png;base64,{{ barcode_base64 }}">
+        </div>
+
+    </div>
+</body>
+
+</html>
